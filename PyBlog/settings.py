@@ -26,7 +26,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'blog.apps.BlogConfig',
     'accounts',
-    'ckeditor',
     'rest_framework',
 ]
 
@@ -113,4 +112,3 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'accounts.BlogUser'
-CKEDITOR_UPLOAD_PATH = "uploads/"
