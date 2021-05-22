@@ -6,7 +6,7 @@ from rest_framework.response import Response
 
 from accounts.models import BlogUser
 from blog.models import Blog
-from blog.serializers import BlogSerializer
+from blog.serializers import BlogSerializer, CommentSerializer
 
 
 @api_view((["GET"]))
@@ -27,16 +27,26 @@ def BaseAPI(request):
     return Response(response)
 
 
-def RetrieveUserUsingCookies(request):
+def RetrieveUserUsingCookies(request, required=True):
     token = request.COOKIES.get('jwt')
-    if not token:
+    payload = {}
+    expired = False
+    if not token and required:
         raise AuthenticationFailed("UnAuthenticated")
     try:
-        payload = jwt.decode(token, "secret", algorithms=['HS256'])
+        if token:
+            payload = jwt.decode(token, "secret", algorithms=['HS256'])
     except jwt.ExpiredSignatureError:
-        raise AuthenticationFailed("UnAuthenticated")
-    user = BlogUser.objects.get(id=payload['id'])
-    return user
+        expired = True
+        if required:
+            raise AuthenticationFailed("UnAuthenticated")
+    try:
+        if token and not expired:
+            user = BlogUser.objects.get(id=payload['id'])
+            return user
+    except NameError:
+        pass
+    return None
 
 
 @api_view((["GET"]))
@@ -46,9 +56,20 @@ def BlogsList(request):
     return Response(serializer.data)
 
 
-@api_view(["GET"])
-def BlogDetail(request, pk):
+@api_view(["GET", "POST"])
+def BlogDetail(request, pk):  # ToDo: Return Comments In Response
     blog = Blog.objects.get(id=pk)
+    user = RetrieveUserUsingCookies(request, False)
+    if user is not None:
+        blog.views.add(user)
+        if request.method == "POST":
+            request.data['user'] = user.id
+            request.data['blog'] = blog.id
+            comment = CommentSerializer(data=request.data)
+            if comment.is_valid():
+                comment.save()
+            else:
+                print(comment.errors)
     serializer = BlogSerializer(blog)
     return Response(serializer.data)
 

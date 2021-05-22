@@ -14,3 +14,10 @@ class Blog(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class Comment(models.Model):
+    user = models.ForeignKey(BlogUser, on_delete=models.CASCADE, related_name="blogUser")
+    blog = models.ForeignKey(Blog, on_delete=models.CASCADE, related_name="blogs")
+    comment = models.CharField(max_length=600)
+    time_created = models.DateTimeField(auto_now_add=True, null=True)

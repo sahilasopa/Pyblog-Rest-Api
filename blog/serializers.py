@@ -1,15 +1,17 @@
-from django.utils.html import strip_tags
-from rest_framework.serializers import ModelSerializer
+from rest_framework import serializers
 
-from blog.models import Blog
+from blog.models import Blog, Comment
 
 
-class BlogSerializer(ModelSerializer):
+class BlogSerializer(serializers.ModelSerializer):
+    comments = serializers.StringRelatedField(many=True)
+
     class Meta:
         model = Blog
         fields = "__all__"
 
-    def to_representation(self, instance):
-        data = super().to_representation(instance)
-        data['blog'] = strip_tags(instance.blog)
-        return data
+
+class CommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = "__all__"
