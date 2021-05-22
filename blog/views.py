@@ -23,7 +23,6 @@ def BaseAPI(request):
         "Blog Create": "/blog/create",
         "Blog Update": "/blog/update/<id>",
         "Blog Delete": "/blog/delete/<id>",
-        "": "",
     }
     return Response(response)
 
