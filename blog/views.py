@@ -57,7 +57,7 @@ def BlogsList(request):
 
 
 @api_view(["GET", "POST"])
-def BlogDetail(request, pk):  # ToDo: Return Comments In Response
+def BlogDetail(request, pk):
     blog = Blog.objects.get(id=pk)
     user = RetrieveUserUsingCookies(request, False)
     if user is not None:
@@ -69,7 +69,7 @@ def BlogDetail(request, pk):  # ToDo: Return Comments In Response
             if comment.is_valid():
                 comment.save()
             else:
-                print(comment.errors)
+                return Response(comment.errors)
     serializer = BlogSerializer(blog)
     return Response(serializer.data)
 

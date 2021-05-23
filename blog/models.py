@@ -9,7 +9,6 @@ class Blog(models.Model):
     blog = models.TextField()
     views = models.ManyToManyField(BlogUser, blank=True, related_name='Views')
     likes = models.ManyToManyField(BlogUser, blank=True, related_name='Likes')
-    comments = models.CharField(blank=True, max_length=120)
     uploaded_at = models.DateTimeField(auto_now_add=True, null=True)
 
     def __str__(self):
