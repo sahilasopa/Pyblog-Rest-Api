@@ -4,7 +4,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('blog', '0008_rename_blog_comment_blogx'),
     ]

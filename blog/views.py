@@ -1,7 +1,8 @@
 import jwt
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, renderer_classes
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.exceptions import PermissionDenied
+from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 from rest_framework.response import Response
 
 from accounts.models import BlogUser
@@ -50,13 +51,15 @@ def RetrieveUserUsingCookies(request, required=True):
 
 
 @api_view((["GET"]))
+@renderer_classes([TemplateHTMLRenderer, JSONRenderer])
 def BlogsList(request):
     blogs = Blog.objects.all()
     serializer = BlogSerializer(blogs, many=True)
-    return Response(serializer.data)
+    return Response({'response': serializer.data}, template_name='index.html')
 
 
 @api_view(["GET", "POST"])
+@renderer_classes([TemplateHTMLRenderer, JSONRenderer])
 def BlogDetail(request, pk):
     blog = Blog.objects.get(id=pk)
     user = RetrieveUserUsingCookies(request, False)
@@ -71,7 +74,7 @@ def BlogDetail(request, pk):
             else:
                 return Response(comment.errors)
     serializer = BlogSerializer(blog)
-    return Response(serializer.data)
+    return Response({'response': serializer.data, "pk": pk}, template_name='post.html')
 
 
 @api_view(['GET', "POST"])
